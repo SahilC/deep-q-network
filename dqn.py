@@ -22,24 +22,6 @@ class dqn(nn.Module):
         x = F.relu(self.bn3(self.conv3(x)))
         return self.fc1(x.view(x.size(0),-1))
 
-
-def initialize_network():
-    BATCH_SIZE = 128
-    GAMMA = 0.999
-    EPS_START = 0.9
-    EPS_END = 0.005
-    EPS_DECAY = 200
-    USE_CUDA = torch.cuda.is_available()
-    dtype = torch.cuda.FloatTensor if USE_CUDA else torch.FloatTensor
-
-    model = dqn()
-    mem = ReplayMemory(10000)
-    optimizer =  optim.RMSProp(model.parameters())
-
-    model.type(dtype)
-    steps_done = 0
-    episode_durations = []
-
 def select_action(state):
     global steps_done
     sample = random.random()
