@@ -42,7 +42,7 @@ def opt_model():
 	#Update variables from back-prop
 	optimizer.step()
 
-def train():
+def train(env):
 	env.reset()
 	last_screen = get_screen()
 	current_screen = get_screen()

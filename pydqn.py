@@ -1,5 +1,6 @@
 import gym
 import math
+import matplotlib.pyplot as plt
 import random
 
 import torch
@@ -13,7 +14,7 @@ import torchvision.transforms as T
 
 from dqn import dqn
 from dqn import select_action
-from dqn import plot_duration
+from dqn import plot_durations
 from input_proc import get_screen
 from replay_mem import replayMemory
 from torch.autograd import Variable
@@ -25,7 +26,7 @@ env = env.unwrapped
 
 
 env.reset()
-plt.imshow(get_screen().squeeze(0).permute(1, 2, 0).numpy(), interpolation='none')
+plt.imshow(get_screen(env).squeeze(0).permute(1, 2, 0).numpy(), interpolation='none')
 plt.show()
 
 # Variable initialization 
@@ -49,7 +50,7 @@ episode_durations = []
 Transitions = namedTuple('Transition',('state','action','next_state','reward'))
 mem = replayMemory(10000)
 
-train()
+train(env)
 
 
 
