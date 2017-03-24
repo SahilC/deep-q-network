@@ -3,10 +3,14 @@ import torch
 from itertools import count
 from input_proc import get_screen
 from dqn import select_action
+from dqn import plot_durations
 from replay_mem import replayMemory
 
 mem = replayMemory(10000)
 BATCH_SIZE = 128
+USE_CUDA = torch.cuda.is_available()
+dtype = torch.cuda.FloatTensor if USE_CUDA else torch.FloatTensor
+episode_durations = []
 
 def opt_model(model):
 	global last_sync
@@ -77,5 +81,5 @@ def train(env,model):
 
 		if done:
 			episode_durations.append(t+1)
-			plot_durations()
+			plot_durations(episode_durations)
 			break

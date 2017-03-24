@@ -2,7 +2,14 @@ import math
 import random
 import torch
 import torch.nn as nn 
+import matplotlib.pyplot as plt
 import torch.nn.functional as F
+
+from torch.autograd import Variable
+
+USE_CUDA = torch.cuda.is_available()
+dtype = torch.cuda.FloatTensor if USE_CUDA else torch.FloatTensor
+
 
 class dqn(nn.Module):
     def __init__(self):
@@ -37,7 +44,7 @@ def select_action(state,model):
     else:
         return torch.LongTensor([[random.randrange(2)]])
 
-def plot_durations():
+def plot_durations(episode_durations):
     plt.figure(1)
     plt.clf()
     durations_t = torch.Tensor(episode_durations)

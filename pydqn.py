@@ -1,6 +1,5 @@
 import gym
 import math
-import matplotlib.pyplot as plt
 import random
 
 import torch
@@ -16,7 +15,6 @@ from dqn import dqn
 from dqn import select_action
 from dqn import plot_durations
 from input_proc import get_screen
-from torch.autograd import Variable
 from train import train
 
 # Initialize OpenAI's gym cartpole environment
@@ -25,8 +23,8 @@ env = env.unwrapped
 
 
 env.reset()
-plt.imshow(get_screen(env).squeeze(0).permute(1, 2, 0).numpy(), interpolation='none')
-plt.show()
+#plt.imshow(get_screen(env).squeeze(0).permute(1, 2, 0).numpy(), interpolation='none')
+#plt.show()
 
 # Variable initialization 
 last_sync = 0
@@ -35,11 +33,11 @@ GAMMA = 0.999
 USE_CUDA = torch.cuda.is_available()
 dtype = torch.cuda.FloatTensor if USE_CUDA else torch.FloatTensor
 
+
 model = dqn()
 optimizer =  optim.RMSprop(model.parameters())
 
 model.type(dtype)
-episode_durations = []
 
 # named tuple to store transitions
 
