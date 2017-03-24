@@ -72,7 +72,7 @@ def opt_model(model, optimizer):
 	#Update variables from back-prop
 	optimizer.step()
 
-def train(env,model,optimizer):
+def train(env, model, optimizer):
 	for i in count(1):
 		env.reset()
 		# Build state of current as difference of two frames
@@ -80,6 +80,12 @@ def train(env,model,optimizer):
 		current_screen = get_screen(env)
 		state = (current_screen - last_screen)
 		print("Iteration:",i)
+
+		if i % 1 == 0:
+			torch.save({
+            'epoch': i + 1,
+            'state_dict': model.state_dict(),
+        	}, 'checkpoint.tar' )
 
 		# Try till the game fails
 		for t in count():
