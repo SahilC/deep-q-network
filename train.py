@@ -55,31 +55,32 @@ def opt_model(model):
 	optimizer.step()
 
 def train(env,model):
-	env.reset()
-	last_screen = get_screen(env)
-	current_screen = get_screen(env)
-	state = (current_screen - last_screen)
-
-	for t in count():
-		action = select_action(state,model)
-		_, reward, done, _ = env.step(action[0,0])
-		reward = torch.Tensor([reward])
-
-		if not done:
-			last_screen = current_screen
-			current_screen = get_screen(env)
-			next_state = current_screen - last_screen
-		else:
-			next_state = None
-
-		mem.push(state,action,next_state,reward)
-
-
-		state = next_state
-
-		opt_model(model)
-
-		if done:
-			episode_durations.append(t+1)
-			plot_durations(episode_durations)
-			break
+	for i in count(1):
+		env.reset()
+		last_screen = get_screen(env)
+		current_screen = get_screen(env)
+		state = (current_screen - last_screen)
+		
+		for t in count():
+			action = select_action(state,model)
+			_, reward, done, _ = env.step(action[0,0])
+			reward = torch.Tensor([reward])
+			
+			if not done:
+				last_screen = current_screen
+				current_screen = get_screen(env)
+				next_state = current_screen - last_screen
+			else:
+				next_state = None
+				
+			mem.push(state,action,next_state,reward)
+			
+			
+			state = next_state
+			
+			opt_model(model)
+			
+			if done:
+				episode_durations.append(t+1)
+				plot_durations(episode_durations)
+				break
