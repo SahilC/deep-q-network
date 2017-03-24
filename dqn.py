@@ -1,5 +1,3 @@
-from replay_mem import ReplayMemory
-
 import math
 import random
 import torch.nn as nn 

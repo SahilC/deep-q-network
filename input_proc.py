@@ -1,6 +1,6 @@
-import torchvision.transforms as T
 import matplotlib.pyplot as plt
 import numpy as np
+import torchvision.transforms as T
 
 resize = T.Compose([T.ToPILImage(),T.Scale(40, interpolation=Image.CUBIC), T.ToTensor()])
 screen_width = 600
