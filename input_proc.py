@@ -28,7 +28,3 @@ def get_screen():
     screen = torch.from_numpy(screen)
     # Resize, and add a batch dimension (BCHW)
     return resize(screen).unsqueeze(0)
-
-env.reset()
-plt.imshow(get_screen().squeeze(0).permute(1, 2, 0).numpy(), interpolation='none')
-plt.show()

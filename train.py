@@ -60,12 +60,12 @@ def train():
 		else:
 			next_state = None
 
-		memory.push(state,action,next_state,reward)
+		mem.push(state,action,next_state,reward)
 
 
 		state = next_state
 
-		optimize_model()
+		opt_model()
 
 		if done:
 			episode_durations.append(t+1)
