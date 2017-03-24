@@ -1,12 +1,20 @@
-from input_proc import get_screen
+import torch 
 
-def opt_model():
+from itertools import count
+from input_proc import get_screen
+from dqn import select_action
+from replay_mem import replayMemory
+
+mem = replayMemory(10000)
+BATCH_SIZE = 128
+
+def opt_model(model):
 	global last_sync
-	if len(memory) < BATCH_SIZE:
+	if len(mem) < BATCH_SIZE:
 		return
 
-	transitions = memory.sample(BATCH_SIZE)
-	batch = Transition(*zip(*transitions)) 
+	transitions = mem.sample(BATCH_SIZE)
+	batch = Transitions(*zip(*transitions)) 
 
 	##
 	## Builds the computation graph for Q-learning
@@ -42,20 +50,20 @@ def opt_model():
 	#Update variables from back-prop
 	optimizer.step()
 
-def train(env):
+def train(env,model):
 	env.reset()
-	last_screen = get_screen()
-	current_screen = get_screen()
+	last_screen = get_screen(env)
+	current_screen = get_screen(env)
 	state = (current_screen - last_screen)
 
 	for t in count():
-		action = select_action(state)
+		action = select_action(state,model)
 		_, reward, done, _ = env.step(action[0,0])
 		reward = torch.Tensor([reward])
 
 		if not done:
 			last_screen = current_screen
-			current_screen = get_screen()
+			current_screen = get_screen(env)
 			next_state = current_screen - last_screen
 		else:
 			next_state = None
@@ -65,7 +73,7 @@ def train(env):
 
 		state = next_state
 
-		opt_model()
+		opt_model(model)
 
 		if done:
 			episode_durations.append(t+1)

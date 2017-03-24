@@ -1,5 +1,6 @@
 import math
 import random
+import torch
 import torch.nn as nn 
 import torch.nn.functional as F
 
@@ -20,7 +21,13 @@ class dqn(nn.Module):
         x = F.relu(self.bn3(self.conv3(x)))
         return self.fc1(x.view(x.size(0),-1))
 
-def select_action(state):
+
+EPS_START = 0.9
+EPS_END = 0.005
+EPS_DECAY = 200
+steps_done = 0
+
+def select_action(state,model):
     global steps_done
     sample = random.random()
     eps_threshold = EPS_END + (EPS_START - EPS_END)* math.exp(-1. * steps_done / EPS_DECAY)

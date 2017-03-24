@@ -16,7 +16,6 @@ from dqn import dqn
 from dqn import select_action
 from dqn import plot_durations
 from input_proc import get_screen
-from replay_mem import replayMemory
 from torch.autograd import Variable
 from train import train
 
@@ -31,26 +30,20 @@ plt.show()
 
 # Variable initialization 
 last_sync = 0
-BATCH_SIZE = 128
+
 GAMMA = 0.999
-EPS_START = 0.9
-EPS_END = 0.005
-EPS_DECAY = 200
 USE_CUDA = torch.cuda.is_available()
 dtype = torch.cuda.FloatTensor if USE_CUDA else torch.FloatTensor
 
 model = dqn()
-optimizer =  optim.RMSProp(model.parameters())
+optimizer =  optim.RMSprop(model.parameters())
 
 model.type(dtype)
-steps_done = 0
 episode_durations = []
 
 # named tuple to store transitions
-Transitions = namedTuple('Transition',('state','action','next_state','reward'))
-mem = replayMemory(10000)
 
-train(env)
+train(env,model)
 
 
 
