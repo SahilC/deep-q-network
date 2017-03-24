@@ -9,7 +9,7 @@ screen_width = 600
 
 # Method to get the position of the cart
 def get_cart_location(env):
-	world_width = env.x_threshold*2
+	world_width = env.max_position*2
 	scale = screen_width/world_width
 	return(env.state[0]*scale + screen_width/2.0)
 

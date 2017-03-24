@@ -17,7 +17,8 @@ from input_proc import get_screen
 from train import train
 
 # Initialize OpenAI's gym cartpole environment
-env = gym.make('CartPole-v0')
+env = gym.make('MountainCar-v0')
+# env = gym.make('CartPole-v0')
 env = env.unwrapped
 
 
