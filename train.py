@@ -81,7 +81,7 @@ def train(env, model, optimizer):
 		state = (current_screen - last_screen)
 		print("Iteration:",i)
 
-		if i % 1 == 0:
+		if i % 100 == 0:
 			torch.save({
             'epoch': i + 1,
             'state_dict': model.state_dict(),
