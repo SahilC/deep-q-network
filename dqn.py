@@ -20,6 +20,8 @@ class dqn(nn.Module):
         self.bn2 = nn.BatchNorm2d(32)
         self.conv3 = nn.Conv2d(32, 32, kernel_size=5, stride=2)
         self.bn3 = nn.BatchNorm2d(32)
+
+        # This defines which action we should take. 
         self.fc1 = nn.Linear(448,2)
 
     # Feedforward definition with ReLu activations
@@ -38,12 +40,13 @@ steps_done = 0
 def select_action(state,model):
     global steps_done
     sample = random.random()
-    
+
     # Threshold defines with which probability should we move left/right
     eps_threshold = EPS_END + (EPS_START - EPS_END)* math.exp(-1. * steps_done / EPS_DECAY)
     steps_done += 1
     if sample > eps_threshold:
-        return model(Variable(state.type(dtype), volatile=True)).data.max(1)[1].cpu()
+        val = model(Variable(state.type(dtype), volatile=True))
+        return val.data.max(1)[1].cpu()
     else:
         return torch.LongTensor([[random.randrange(2)]])
 
