@@ -20,9 +20,11 @@ USE_CUDA = torch.cuda.is_available()
 dtype = torch.cuda.FloatTensor if USE_CUDA else torch.FloatTensor
 
 def opt_model(model, optimizer):
+	# Return if incorrect batch size
 	if len(mem) < BATCH_SIZE:
 		return
 
+	# randomly sample a transition
 	transitions = mem.sample(BATCH_SIZE)
 	batch = mem.Transitions(*zip(*transitions)) 
 
@@ -30,19 +32,26 @@ def opt_model(model, optimizer):
 	## Builds the computation graph for Q-learning
 	##
 
+
 	non_final_mask = torch.ByteTensor(tuple(map(lambda s: s is not None, batch.next_state)))
 
 	non_final_next_states_t = torch.cat(tuple(s for s in batch.next_state if s is not None)).type(dtype)
 
+	# Temporary volatile variable
 	non_final_next_states = Variable(non_final_next_states_t,volatile=True)
+
+
 	state_batch = Variable(torch.cat(batch.state))
 	action_batch = Variable(torch.cat(batch.action))
 	reward_batch = Variable(torch.cat(batch.reward))
+	next_state_values = Variable(torch.zeros(BATCH_SIZE))
 
+	# Model acts on your batch of states
 	state_action_values = model(state_batch).gather(1,action_batch).cpu()
 
-	next_state_values = Variable(torch.zeros(BATCH_SIZE))
+	# have your model predict the value of your next state
 	next_state_values[non_final_mask] = model(non_final_next_states).max(1)[0].cpu()
+	
 	next_state_values.volitile = False
 
 	expected_state_action_values = (next_state_values*GAMMA) + reward_batch

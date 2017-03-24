@@ -7,11 +7,13 @@ from PIL import Image
 resize = T.Compose([T.ToPILImage(),T.Scale(40, interpolation=Image.CUBIC), T.ToTensor()])
 screen_width = 600
 
+# Method to get the position of the cart
 def get_cart_location(env):
 	world_width = env.x_threshold*2
 	scale = screen_width/world_width
 	return(env.state[0]*scale + screen_width/2.0)
 
+# Method to get screen for input
 def get_screen(env):
     screen = env.render(mode='rgb_array').transpose((2,0,1))
     screen = screen[:, 160:320]
@@ -27,6 +29,8 @@ def get_screen(env):
     screen = screen[:, :, slice_range]
     # Convert to float, rescare, convert to torch tensor (this doesn't require a copy)
     screen = np.ascontiguousarray(screen, dtype=np.float32) / 255
+
+    # Convert to a Torch tensor
     screen = torch.from_numpy(screen)
     # Resize, and add a batch dimension (BCHW)
     return resize(screen).unsqueeze(0)
