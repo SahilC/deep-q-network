@@ -6,7 +6,6 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.autograd as autograd
-import torch.nn.functional as F
 import torchvision.transforms as T
 
 
@@ -23,13 +22,7 @@ env = env.unwrapped
 
 
 env.reset()
-#plt.imshow(get_screen(env).squeeze(0).permute(1, 2, 0).numpy(), interpolation='none')
-#plt.show()
 
-# Variable initialization 
-last_sync = 0
-
-GAMMA = 0.999
 USE_CUDA = torch.cuda.is_available()
 dtype = torch.cuda.FloatTensor if USE_CUDA else torch.FloatTensor
 
@@ -41,7 +34,7 @@ model.type(dtype)
 
 # named tuple to store transitions
 
-train(env,model)
+train(env,model,optimizer)
 
 
 

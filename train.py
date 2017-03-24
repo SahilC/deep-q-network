@@ -1,24 +1,30 @@
 import torch 
 
 from itertools import count
-from input_proc import get_screen
 from dqn import select_action
 from dqn import plot_durations
+from input_proc import get_screen
+from torch.autograd import Variable 
 from replay_mem import replayMemory
+import torch.nn.functional as F
 
-mem = replayMemory(10000)
+
+
+# Variable initialization 
+last_sync = 0
 BATCH_SIZE = 128
+GAMMA = 0.999
+episode_durations = []
+mem = replayMemory(10000)
 USE_CUDA = torch.cuda.is_available()
 dtype = torch.cuda.FloatTensor if USE_CUDA else torch.FloatTensor
-episode_durations = []
 
-def opt_model(model):
-	global last_sync
+def opt_model(model, optimizer):
 	if len(mem) < BATCH_SIZE:
 		return
 
 	transitions = mem.sample(BATCH_SIZE)
-	batch = Transitions(*zip(*transitions)) 
+	batch = mem.Transitions(*zip(*transitions)) 
 
 	##
 	## Builds the computation graph for Q-learning
@@ -28,7 +34,7 @@ def opt_model(model):
 
 	non_final_next_states_t = torch.cat(tuple(s for s in batch.next_state if s is not None)).type(dtype)
 
-	non_final_next_states = Variable(non_final_next_states_t,volitile=True)
+	non_final_next_states = Variable(non_final_next_states_t,volatile=True)
 	state_batch = Variable(torch.cat(batch.state))
 	action_batch = Variable(torch.cat(batch.action))
 	reward_batch = Variable(torch.cat(batch.reward))
@@ -54,32 +60,32 @@ def opt_model(model):
 	#Update variables from back-prop
 	optimizer.step()
 
-def train(env,model):
+def train(env,model,optimizer):
 	for i in count(1):
 		env.reset()
 		last_screen = get_screen(env)
 		current_screen = get_screen(env)
 		state = (current_screen - last_screen)
-		
+		print("Iteration:",i)
 		for t in count():
 			action = select_action(state,model)
 			_, reward, done, _ = env.step(action[0,0])
 			reward = torch.Tensor([reward])
-			
+
 			if not done:
 				last_screen = current_screen
 				current_screen = get_screen(env)
 				next_state = current_screen - last_screen
 			else:
 				next_state = None
-				
+
 			mem.push(state,action,next_state,reward)
-			
-			
+
+
 			state = next_state
-			
-			opt_model(model)
-			
+
+			opt_model(model, optimizer)
+
 			if done:
 				episode_durations.append(t+1)
 				plot_durations(episode_durations)
